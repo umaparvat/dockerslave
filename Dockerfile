@@ -47,11 +47,21 @@ apt-get -y install docker-ce
 RUN apt-get install -y docker-ce
 RUN apt-get install -y python3.5 python-dev python-pip python-virtualenv
 
+
+# copy tssh keys to root
+COPY ./id_rsa /root/.ssh/
+COPY ./id_rsa.pub /root/.ssh/
+
+#Modifu the files
+RUN echo "AuthorizedKeysFile /etc/ssh/authorized_keys" >> /etc/ssh/sshd_config
+RUN echo "IdentityFile /root/.ssh/id_rsa" >> /etc/ssh/ssh_config
 # Set user jenkins to the image
+
 RUN useradd -m -d /home/jenkins -s /bin/sh jenkins &&\
     echo "jenkins:jenkins" | chpasswd
 
 RUN usermod -a -G docker jenkins
+
 
 # Standard SSH port
 EXPOSE 22
